@@ -1,0 +1,34 @@
+use ::BBjThread/BBjThread.bbj::BBjThread
+
+class public NextPrimeThread extends BBjThread
+
+    method public NextPrimeThread()
+    methodend
+    
+    method public void run()
+    
+        n = #getValue("FINDNEXTPRIME") +1
+        while !#isPrim(n) 
+            n=n+1
+        wend
+        
+        
+        #setValue("THENEXTPRIME",n)
+        
+    methodend
+    
+    
+    method public static boolean isPrim(long value!) 
+        if value! <= 2 then 
+            methodret value! = 2
+        endif
+        for i=2 to int(sqr(value!))+1
+            if mod (value!,i) = 0 then
+                methodret Boolean.FALSE
+            fi
+        next
+        methodret Boolean.TRUE
+    methodend
+
+classend
+

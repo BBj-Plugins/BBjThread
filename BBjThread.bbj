@@ -1,0 +1,143 @@
+class public BBjThread
+
+    field private String uuid!
+    field private BBjNamespace ns!
+    
+    field public static BBjNumber ON_THREAD_FINISHED = 12350
+     
+
+    rem require extension
+    method protected BBjThread()
+        x! = argv(1,err=*next)
+        if x! = "@@@@@new@@@@@thread@@@@@" then
+            #uuid! = argv(2)
+            #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
+            #restoreEnvironment()
+        else
+            #uuid! = "T_"+java.util.UUID.randomUUID().toString() 
+            #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
+            #ns!.setValue("TERMINATED","0")
+            #ns!.setCallbackForVariableChange("TERMINATED",#this!,"onBackgroundThreadTerminated")
+        fi
+        
+    methodend
+    
+    
+    method public void onBackgroundThreadTerminated(BBjNamespaceEvent ev!) 
+        #fireEvent(#ON_THREAD_FINISHED,#this!)
+    methodend
+
+    rem starts the thread
+    method public void start()
+        #forkBBjProcess()
+    methodend
+    
+    method protected void run()
+        throw "need to override",18
+    methodend
+    
+    method public void doRun()
+        #run()
+        #ns!.setValue("TERMINATED","1")
+    methodend
+
+    method private void forkBBjProcess()
+    
+        declare BBjCommandLineObject cfg!
+        cfg! = BBjAPI().getConfig().getCurrentCommandLineObject()
+        
+        classname! = str(#this!)
+        classname! = classname!.substring(0,classname!.indexOf("@"))
+        
+        cfg!.setProgramName(BBjAPI().getFileSystem().resolvePath("BBjThread/BBjThread.bbj"))
+        
+        args! = new BBjVector()
+        args!.add("@@@@@new@@@@@thread@@@@@")
+        args!.add(#uuid!)
+        args!.add(classname!)
+        cfg!.setProgramArgsVector(args!)
+        cfg!.setTerminal("IO")
+        
+        #stashEnvironment()
+        
+        BBjAPI().newBBjSession(cfg!)
+        
+    methodend
+    
+    method private void stashEnvironment()
+    
+        hm! = new java.util.HashMap()
+        hm!.put("DSK",DSK(""))
+        hm!.put("DIR",DIR(""))
+        hm!.put("PFX",PFX)
+        
+        stbls! = new java.util.HashMap()
+        
+        s$ = stbl("!LIST")
+        while s$>""
+           s1$=s$(1,pos($00$=s$)-1)
+           s$=s$(pos($00$=s$)+1)
+           stbls!.put(s1$,stbl(s1$))
+        wend
+        hm!.put("STBL",stbls!)
+        
+        #ns!.setValue("ENVIRONMENT",hm!)
+        
+    methodend
+    
+    
+    method private void restoreEnvironment()
+    
+        hm! = #ns!.getValue("ENVIRONMENT")
+
+        setdrive hm!.get("DSK")
+        chdir hm!.get("DIR")
+        PREFIX hm!.get("PFX")
+
+        stbls! = hm!.get("STBL")
+        it! = stbls!.keySet().iterator()
+        while it!.hasNext()
+            k$=it!.next()
+            dummy$=stbl(k$,stbls!.get(k$))
+        wend
+        
+    methodend
+    
+    
+    method public void setValue(String key!, Object value!)
+        #ns!.setValue(key!,value!)
+    methodend
+
+    method public Object getValue(String key!)
+        methodret #ns!.getValue(key!)
+    methodend
+    
+    method public void setCallback(int p_eventType!, String p_callback!)
+        BBjAPI().setCustomEventCallback(str(#this!)+str(p_eventType!),p_callback!)
+    methodend
+    
+    method public void setCallback(int p_eventType!, CustomObject p_snippetSetInstance!, String p_method!) 
+        BBjAPI().setCustomEventCallback(str(#this!)+str(p_eventType!),p_snippetSetInstance!,p_method!)
+    methodend                 
+                     
+    method public void clearCallback(int p_eventType!) 
+        BBjAPI().clearCustomEventCallback(str(#this!)+str(p_eventType!),err=*next)
+    methodend
+
+    method protected void fireEvent(int p_eventType!, Object payload!)
+        rem we're posting BBj Standard Events wherever possible. Is this a good idea?
+        BBjAPI().postPriorityCustomEvent(str(#this!)+str(p_eventType!),payload!)
+    methodend
+
+    
+classend
+
+
+x! = argv(1,err=skip)
+if x! = "@@@@@new@@@@@thread@@@@@" then
+    classname!=argv(3)
+    t! = eval("new "+classname!+"()")
+    t!.doRun()
+fi
+skip:
+release

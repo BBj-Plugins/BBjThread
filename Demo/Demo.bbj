@@ -1,0 +1,52 @@
+use ::BBjThread/Demo/NextPrimeThread.bbj::NextPrimeThread
+
+wnd! = BBjAPI().openSysGui("X0").addWindow(10,10,800,600,"Check for next Prime Number")
+
+wnd!.addStaticText(100,10,10,120,25,"Enter a number")
+ipn! = wnd!.addInputN(101,130,10,200,25)
+ipn!.setMask("#############0")
+ipn!.setValue(20000000000000)
+
+btn! = wnd!.addButton(102,350,10,250,25,"Check for next prime number")
+
+ced! = wnd!.addCEdit(103,10,80,780,500,"")
+log$=""
+
+tcount! = wnd!.addStaticText(104,720,12,50,25,"0 Threads")
+
+wnd!.setCallback(BBjAPI.ON_CLOSE,"byebye")
+btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onPush")
+
+threadlist! = new java.util.HashMap()
+
+process_events
+
+byebye:
+    bye
+    
+onPush:
+    n = ipn!.getValue()
+    log$=date(0:"%Hz:%mz:%sz")+" Starting Thread to find next higher prime number for "+str(n)+$0a$+log$
+    ced!.setText(log$)
+    ipn!.setValue(n+10)
+    
+    t! = new NextPrimeThread()
+    
+    threadlist!.put(str(t!),t!)
+    
+    t!.setValue("FINDNEXTPRIME",n)
+    t!.setCallback(NextPrimeThread.ON_THREAD_FINISHED,"finished")
+    t!.start()
+    tcount!.setText(str(threadlist!.size())+" Threads")
+return
+
+finished:
+    ev! = BBjAPI().getLastEvent() 
+    t!= ev!.getObject()
+    n = t!.getValue("FINDNEXTPRIME")
+    r = t!.getValue("THENEXTPRIME")  
+    log$=date(0:"%Hz:%mz:%sz")+" Thread to find next higher prime number for "+str(n)+" has just returned with result "+str(r)+$0a$+log$
+    ced!.setText(log$)
+    threadlist!.remove(str(t!))
+    tcount!.setText(str(threadlist!.size())+" Threads")
+return
