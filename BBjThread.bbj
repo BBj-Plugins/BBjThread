@@ -8,6 +8,7 @@ class public BBjThread
 
     rem require extension
     method protected BBjThread()
+    
         x! = argv(1,err=*next)
         if x! = "@@@@@new@@@@@thread@@@@@" then
             #uuid! = argv(2)
@@ -89,11 +90,6 @@ class public BBjThread
     method private void restoreEnvironment()
     
         hm! = #ns!.getValue("ENVIRONMENT")
-
-        setdrive hm!.get("DSK")
-        chdir hm!.get("DIR")
-        PREFIX hm!.get("PFX")
-
         stbls! = hm!.get("STBL")
         it! = stbls!.keySet().iterator()
         while it!.hasNext()
@@ -129,15 +125,22 @@ class public BBjThread
         BBjAPI().postPriorityCustomEvent(str(#this!)+str(p_eventType!),payload!)
     methodend
 
-    
 classend
 
 
 x! = argv(1,err=skip)
 if x! = "@@@@@new@@@@@thread@@@@@" then
+    uuid! = argv(2)
+    ns! = BBjAPI().getNamespace("BBjThread",uuid!,0)
+    hm! = ns!.getValue("ENVIRONMENT")
+    setdrive hm!.get("DSK")
+    chdir hm!.get("DIR")
+    PREFIX hm!.get("PFX")
     classname!=argv(3)
     t! = eval("new "+classname!+"()")
     t!.doRun()
 fi
+
 skip:
+System.out.println("*** ERROR: THREAD ENDED BEFORE IT COULD DO ANYTHING ***")
 release
