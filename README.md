@@ -74,6 +74,19 @@ finished:
     PRINT "Thread to find next higher prime number for "+str(n)+" has just returned with result "+str(r)
 ```
 
+## Demos
+
+The demos in the Demo subfolder show how to use the plug-in in Detail. There are two samples:
+
+### Demo.bbj
+
+This is the full demo of the sample snippets above. You can start multiple threads that compute the next prime number in background. It shows the simplest use case that could be applied: start a thread and let it do something in background, and get notified when it's done
+
+### UpdateUIDemo.bbj
+
+This demo demonstrates how the background thread can notify the UI about where it stands, while it's running. The thread also shows how it can check if the UI did already abandon it by using the ```BBjThread::abort()``` method so it can terminate and stop wasting CPU cycles.
+
+
 
 
 
