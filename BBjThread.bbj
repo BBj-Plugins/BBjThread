@@ -4,6 +4,7 @@ class public BBjThread
     field private BBjNamespace ns!
     
     field public static BBjNumber ON_THREAD_FINISHED = 12350
+    field public static BBjNumber ON_THREAD_UPDATE   = 12352
      
 
     rem require extension
@@ -17,8 +18,11 @@ class public BBjThread
         else
             #uuid! = "T_"+java.util.UUID.randomUUID().toString() 
             #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
-            #ns!.setValue("TERMINATED","0")
-            #ns!.setCallbackForVariableChange("TERMINATED",#this!,"onBackgroundThreadTerminated")
+            #ns!.setValue("@@@@TERMINATED","0")
+            #ns!.setCallbackForVariable("@@@@TERMINATED",#this!,"onBackgroundThreadTerminated")
+            #ns!.setValue("@@@@UPDATE","0")
+            #ns!.setCallbackForVariable("@@@@UPDATE",#this!,"onBackgroundThreadUpdate")
+            #ns!.setValue("@@@@ABORT",0)
         fi
         
     methodend
@@ -26,6 +30,10 @@ class public BBjThread
     
     method public void onBackgroundThreadTerminated(BBjNamespaceEvent ev!) 
         #fireEvent(#ON_THREAD_FINISHED,#this!)
+    methodend
+    
+    method public void onBackgroundThreadUpdate(BBjNamespaceEvent ev!) 
+        #fireEvent(#ON_THREAD_UPDATE,#this!)
     methodend
 
     rem starts the thread
@@ -39,8 +47,12 @@ class public BBjThread
     
     method public void doRun()
         #run()
-        #ns!.setValue("TERMINATED","1")
+        #ns!.setValue("@@@@TERMINATED","1")
     methodend
+    
+    method protected void update()
+        #ns!.setValue("@@@@UPDATE","1")
+    methodend 
 
     method private void forkBBjProcess()
     
@@ -49,7 +61,6 @@ class public BBjThread
         
         classname! = str(#this!)
         classname! = classname!.substring(0,classname!.indexOf("@"))
-        
         cfg!.setProgramName(BBjAPI().getFileSystem().resolvePath("BBjThread/BBjThread.bbj"))
         
         args! = new BBjVector()
@@ -123,6 +134,17 @@ class public BBjThread
     method protected void fireEvent(int p_eventType!, Object payload!)
         rem we're posting BBj Standard Events wherever possible. Is this a good idea?
         BBjAPI().postPriorityCustomEvent(str(#this!)+str(p_eventType!),payload!)
+    methodend
+    
+    
+    method public void abort()
+        #clearCallback(#ON_THREAD_FINISHED)
+        #clearCallback(#ON_THREAD_UPDATE)
+        #ns!.setValue("@@@@ABORT",1)
+    methodend
+    
+    method protected boolean shouldAbort()
+        methodret #ns!.getValue("@@@@ABORT")=1
     methodend
 
 classend

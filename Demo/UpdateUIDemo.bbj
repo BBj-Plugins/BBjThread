@@ -1,0 +1,42 @@
+use ::BBjThread/Demo/threadclasses/UpdateUIThread.bbj::UpdateUIThread
+
+? 'HIDE'
+wnd! = BBjAPI().openSysGui("X0").addWindow(10,10,800,600,"Check for next Prime Number")
+
+p! = wnd!.addProgressBar(100,10,10,300,25,0,100)
+
+btn! = wnd!.addButton(102,350,10,250,25,"(Re)Start")
+
+wnd!.setCallback(BBjAPI.ON_CLOSE,"byebye")
+btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onPush")
+
+process_events
+
+byebye:
+    gosub abortThread
+    bye
+    
+onPush:
+    gosub abortThread
+    p!.setValue(0)
+    thread! = new UpdateUIThread()
+    thread!.setCallback(UpdateUIThread.ON_THREAD_FINISHED,"ThreadFinished")
+    thread!.setCallback(UpdateUIThread.ON_THREAD_UPDATE,"ThreadSentUpdate")
+    thread!.start()
+return
+
+abortThread:    
+    if thread! <> null() then
+        thread!.abort()
+        thread! = null()
+    fi
+return
+
+ThreadSentUpdate:
+    p!.setValue(thread!.getValue("PROGRESS"))
+return
+
+ThreadFinished:
+    a=msgbox("Background Thread terminated")
+    p!.setValue(0)
+return

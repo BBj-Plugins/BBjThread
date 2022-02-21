@@ -1,0 +1,10 @@
+{
+	"name":"BBjThread",
+	"description":"Multithreading for BBj Programs",
+	"version":"0.1",
+	"author": "BASIS Europe Distribution GmbH",
+	"licence": "MIT",
+	"bbj_dependency": "21.14",
+	"dependencies":[]
+}
+

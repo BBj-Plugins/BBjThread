@@ -1,4 +1,4 @@
-use ::BBjThread/Demo/NextPrimeThread.bbj::NextPrimeThread
+use ::BBjThread/Demo/threadclasses/NextPrimeThread.bbj::NextPrimeThread
 
 wnd! = BBjAPI().openSysGui("X0").addWindow(10,10,800,600,"Check for next Prime Number")
 

@@ -1,0 +1,31 @@
+use ::BBjThread/BBjThread.bbj::BBjThread
+
+class public UpdateUIThread extends BBjThread
+
+    method public UpdateUIThread()
+    methodend
+    
+    method public void run()
+    
+        for i=10 to 90 step 10
+            w = rnd(2)+1
+            wait w
+            
+            rem set a value that the UI expects
+            #setValue("PROGRESS",i)
+            
+            rem trigger the ON_THREAD_UPDATE event in the UI process
+            #update()
+
+            rem check if UI requested abort of thread
+            if #shouldAbort() then
+                methodret
+            fi
+            
+        next
+        
+    methodend
+    
+
+classend
+
