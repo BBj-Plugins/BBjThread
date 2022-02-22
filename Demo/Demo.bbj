@@ -7,7 +7,10 @@ ipn! = wnd!.addInputN(101,130,10,200,25)
 ipn!.setMask("#############0")
 ipn!.setValue(20000000000000)
 
-btn! = wnd!.addButton(102,350,10,250,25,"Check for next prime number")
+btn! = wnd!.addButton(102,350,10,140,25,"Get next prime")
+killbtn! = wnd!.addButton(105,500,10,140,25,"Kill all threads")
+
+
 
 ced! = wnd!.addCEdit(103,10,80,780,500,"")
 log$=""
@@ -16,6 +19,7 @@ tcount! = wnd!.addStaticText(104,720,12,50,25,"0 Threads")
 
 wnd!.setCallback(BBjAPI.ON_CLOSE,"byebye")
 btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onPush")
+killbtn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onKillAll")
 
 threadlist! = new java.util.HashMap()
 
@@ -49,4 +53,18 @@ finished:
     ced!.setText(log$)
     threadlist!.remove(str(t!))
     tcount!.setText(str(threadlist!.size())+" Threads")
+return
+
+
+onKillAll:
+    it! = threadlist!.keySet().iterator()
+    while it!.hasNext()
+        t! = it!.next()
+        thread! = threadlist!.get(t!)
+        thread!.kill()
+    wend
+    threadlist! = new java.util.HashMap() 
+    tcount!.setText(str(threadlist!.size())+" Threads")
+    log$=date(0:"%Hz:%mz:%sz")+" Killed all threads"+$0a$+log$
+    ced!.setText(log$)
 return

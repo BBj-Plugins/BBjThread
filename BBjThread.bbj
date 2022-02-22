@@ -15,6 +15,7 @@ class public BBjThread
             #uuid! = argv(2)
             #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
             #restoreEnvironment()
+            #ns!.setValue("@@@@JAVATHREAD",Thread.currentThread())
         else
             #uuid! = "T_"+java.util.UUID.randomUUID().toString() 
             #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
@@ -141,6 +142,12 @@ class public BBjThread
         #clearCallback(#ON_THREAD_FINISHED)
         #clearCallback(#ON_THREAD_UPDATE)
         #ns!.setValue("@@@@ABORT",1)
+    methodend
+    
+    method public void kill()
+        #abort()
+        t! = #ns!.getValue("@@@@JAVATHREAD")
+        t!.stop(err=*next)
     methodend
     
     method protected boolean shouldAbort()
