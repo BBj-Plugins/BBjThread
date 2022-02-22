@@ -10,7 +10,8 @@ ipn!.setValue(20000000000000)
 btn! = wnd!.addButton(102,350,10,140,25,"Get next prime")
 killbtn! = wnd!.addButton(105,500,10,140,25,"Kill all threads")
 
-
+BBjAPI().getObjectTable().put("HELLO","Objecttable")
+BBjAPI().getObjectTable().put("HELLO1","Objecttable")
 
 ced! = wnd!.addCEdit(103,10,80,780,500,"")
 log$=""

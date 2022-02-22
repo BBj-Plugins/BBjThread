@@ -94,20 +94,38 @@ class public BBjThread
         wend
         hm!.put("STBL",stbls!)
         
-        #ns!.setValue("ENVIRONMENT",hm!)
+        ot! = new java.util.HashMap()
+        objt! = BBjAPI().getObjectTable()
+        it! = objt!.getKeys().iterator()
+        while it!.hasNext()
+            k! = it!.next()
+            ot!.put(k!,objt!.get(k!))
+        wend
+        hm!.put("OBJECTTABLE",ot!)
+        
+        #ns!.setValue("@@@@ENVIRONMENT",hm!)
         
     methodend
     
     
     method private void restoreEnvironment()
     
-        hm! = #ns!.getValue("ENVIRONMENT")
+        hm! = #ns!.getValue("@@@@ENVIRONMENT")
         stbls! = hm!.get("STBL")
         it! = stbls!.keySet().iterator()
         while it!.hasNext()
             k$=it!.next()
             dummy$=stbl(k$,stbls!.get(k$))
         wend
+        
+        ot! = hm!.get("OBJECTTABLE")
+        objt! = BBjAPI().getObjectTable()
+        it! = ot!.keySet().iterator()
+        while it!.hasNext()
+            k! = it!.next()
+            objt!.put(k!,ot!.get(k!))
+        wend
+        
         
     methodend
     
@@ -161,7 +179,7 @@ x! = argv(1,err=skip)
 if x! = "@@@@@new@@@@@thread@@@@@" then
     uuid! = argv(2)
     ns! = BBjAPI().getNamespace("BBjThread",uuid!,0)
-    hm! = ns!.getValue("ENVIRONMENT")
+    hm! = ns!.getValue("@@@@ENVIRONMENT")
     setdrive hm!.get("DSK")
     chdir hm!.get("DIR")
     PREFIX hm!.get("PFX")
