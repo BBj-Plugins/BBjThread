@@ -74,6 +74,24 @@ finished:
     PRINT "Thread to find next higher prime number for "+str(n)+" has just returned with result "+str(r)
 ```
 
+## Exchanging Data between Parent and Child Thread
+
+The Thread class implements a ```setValue()``` and ```getValue()``` which allows to put variables. The communication is implemented internally using a BBjNameSpace, so the according rules in terms of CustomObjects apply. 
+
+## Events
+
+There are two events: 
+
+ON_THREAD_FINISHED is fired when the background thread has finished the ```run()``` method. All variables put with ```setValue()``` before the run() method's end can then be retrieved in the parent thread using ```getValue()```. The Event is a BBjCustomEvent and passes the Thread object as its payload.
+
+ON_THREAD_UPDATE is fired whenever the child thread executes ```#update()```. Before that, it can have set variables that the parent thread can use e.g. to update the UI.
+
+## Controlling the Child Thread
+
+When the parent thread executes ```abort()``` the background thread can query that instruction by a call to the ```#shouldAbort()``` method. If this returns true, the thread may gracefully terminate.
+
+The ```kill()``` method executes in the foreground forces a hard termination of the background thread. It may be applied with care.
+
 ## Demos
 
 The demos in the Demo subfolder show how to use the plug-in in Detail. There are two samples:
