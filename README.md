@@ -90,7 +90,7 @@ ON_THREAD_UPDATE is fired whenever the child thread executes ```#update()```. Be
 
 When the parent thread executes ```abort()``` the background thread can query that instruction by a call to the ```#shouldAbort()``` method. If this returns true, the thread may gracefully terminate.
 
-The ```kill()``` method executes in the foreground forces a hard termination of the background thread. It may be applied with care.
+The ```kill()``` method can be called in the parent to force a hard termination of the background thread. It may be applied with care as the thread is internally ended with Java's Thread::stop() which shall only be a last resort for background processes made of legacy code that is not prepared to terminate gracefully by checking the ```#shouldAbort()`` method frequently while in close loops.
 
 ## Demos
 
