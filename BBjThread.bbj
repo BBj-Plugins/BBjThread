@@ -2,6 +2,7 @@ class public BBjThread
 
     field private String uuid!
     field private BBjNamespace ns!
+    field private BBjNamespace nsUser!
     
     field public static BBjNumber ON_THREAD_FINISHED = 12350
     field public static BBjNumber ON_THREAD_UPDATE   = 12352
@@ -14,11 +15,13 @@ class public BBjThread
         if x! = "@@@@@new@@@@@thread@@@@@" then
             #uuid! = argv(2)
             #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
+            #nsUser! = BBjAPI().getNamespace("BBjThread_u",#uuid!,1)
             #restoreEnvironment()
             #ns!.setValue("@@@@JAVATHREAD",Thread.currentThread())
         else
             #uuid! = "T_"+java.util.UUID.randomUUID().toString() 
             #ns! = BBjAPI().getNamespace("BBjThread",#uuid!,1)
+            #nsUser! = BBjAPI().getNamespace("BBjThread_u",#uuid!,1)
             #ns!.setValue("@@@@TERMINATED","0")
             #ns!.setCallbackForVariable("@@@@TERMINATED",#this!,"onBackgroundThreadTerminated")
             #ns!.setValue("@@@@UPDATE","0")
@@ -131,11 +134,11 @@ class public BBjThread
     
     
     method public void setValue(String key!, Object value!)
-        #ns!.setValue(key!,value!)
+        #nsUser!.setValue(key!,value!)
     methodend
 
     method public Object getValue(String key!)
-        methodret #ns!.getValue(key!)
+        methodret #nsUser!.getValue(key!)
     methodend
     
     method public void setCallback(int p_eventType!, String p_callback!)
