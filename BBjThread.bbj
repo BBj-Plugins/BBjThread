@@ -59,7 +59,7 @@ class public BBjThread
     methodend 
 
     method private void forkBBjProcess()
-    
+   
         declare BBjCommandLineObject cfg!
         cfg! = BBjAPI().getConfig().getCurrentCommandLineObject()
         
@@ -75,7 +75,6 @@ class public BBjThread
         cfg!.setTerminal("IO")
         
         #stashEnvironment()
-        
         BBjAPI().newBBjSession(cfg!)
         
     methodend
@@ -190,6 +189,7 @@ if x! = "@@@@@new@@@@@thread@@@@@" then
     t! = eval("new "+classname!+"()")
     t!.doRun()
 fi
+release
 
 skip:
 System.out.println("*** ERROR: THREAD ENDED BEFORE IT COULD DO ANYTHING ***")
