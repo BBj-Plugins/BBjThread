@@ -12,7 +12,7 @@ class public UpdateUIThread extends BBjThread
             wait w
             
             rem set a value that the UI expects
-            #setValue("PROGRESS",i)
+            #setValue("PROGRESS",CAST(int,i)); rem CAST to int for DWCJ Demo
             
             rem trigger the ON_THREAD_UPDATE event in the UI process
             #update()
