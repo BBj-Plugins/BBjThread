@@ -5,10 +5,12 @@ wnd! = BBjAPI().openSysGui("X0").addWindow(10,10,800,600,"Check for next Prime N
 
 p! = wnd!.addProgressBar(100,10,10,300,25,0,100)
 
-btn! = wnd!.addButton(102,350,10,250,25,"(Re)Start")
+btn! = wnd!.addButton(102,350,10,200,25,"(Re)Start")
+abortbtn! = wnd!.addButton(103,580,10,200,25,"Abort")
 
 wnd!.setCallback(BBjAPI.ON_CLOSE,"byebye")
 btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onPush")
+abortbtn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"abortThread")
 
 process_events
 
@@ -39,4 +41,5 @@ return
 ThreadFinished:
     a=msgbox("Background Thread terminated")
     p!.setValue(0)
+    thread! = null()
 return
