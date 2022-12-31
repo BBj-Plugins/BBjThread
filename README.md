@@ -23,7 +23,7 @@ The following environment things are not rebuilt in the background thread
 
 This Thread calculates the next prime number for a given number:
 
-```
+```bbj
 use ::BBjThread/BBjThread.bbj::BBjThread
 
 class public NextPrimeThread extends BBjThread
@@ -56,7 +56,7 @@ classend
 
 This is how you start the thread:
 
-```
+```bbj
 t! = new NextPrimeThread()
 t!.setValue("FINDNEXTPRIME",1000)
 t!.setCallback(NextPrimeThread.ON_THREAD_FINISHED,"finished")
@@ -65,7 +65,7 @@ t!.start()
 
 When the run() method finishes, the ON_THREAD_FINISHED Event is thrown:
 
-```
+```bbj
 finished:
     ev! = BBjAPI().getLastEvent() 
     t!= ev!.getObject()
